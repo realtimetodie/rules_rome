@@ -1,0 +1,70 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//rome:defs.bzl", "rome")
+
+exports_files(["rome.json"])
+
+# This is the target rule authors should put in their "toolchains"
+# attribute in order to get a rome runtime for the correct
+# platform.
+# See https://docs.bazel.build/versions/main/toolchains.html#writing-rules-that-use-toolchains
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+exports_files(
+    ["defs.bzl"],
+    visibility = ["//docs:__pkg__"],
+)
+
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//rome/private:rome",
+        "@bazel_skylib//lib:types",
+    ],
+)
+
+bzl_library(
+    name = "dependencies",
+    srcs = ["dependencies.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//rome/private:versions",
+        "//rome/private:toolchains_repo",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+rome(
+    name = "rome_check",
+    data = glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"]),
+    command = ["check", "--apply", "."],
+    config = "//:rome.json",
+)
+
+rome(
+    name = "rome_format",
+    data = glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"]),
+    command = ["format", "--write", "."],
+    config = "//:rome.json",
+)

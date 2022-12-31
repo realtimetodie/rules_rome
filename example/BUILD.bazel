@@ -1,0 +1,13 @@
+load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test", "rome_format_test")
+
+rome_format_test(
+    name = "format_test",
+    config = "rome.json",
+    data = ["index.js"],
+)
+
+rome_check_test(
+    name = "lint_test",
+    config = "rome.json",
+    data = ["index.js"],
+)

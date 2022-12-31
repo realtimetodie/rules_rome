@@ -1,0 +1,29 @@
+load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test", "rome_format_test")
+
+exports_files(
+    ["rome.json"],
+    visibility = ["//rome:__pkg__"],
+)
+
+rome_check_test(
+    name = "test_block_stmt_error",
+    data = ["fixtures/block_stmt_error.js"],
+    tags = ["manual"],
+)
+
+rome_format_test(
+    name = "test_formatted",
+    data = ["fixtures/formatted.js"],
+    tags = ["manual"],
+)
+
+rome_format_test(
+    name = "test_unformatted",
+    data = ["fixtures/unformatted.js"],
+    tags = ["manual"],
+)
+
+sh_binary(
+    name = "rome_test_runner",
+    srcs = ["rome_failure_test.sh"],
+)

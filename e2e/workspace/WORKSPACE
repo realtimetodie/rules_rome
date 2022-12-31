@@ -1,0 +1,22 @@
+local_repository(
+    name = "build_bazel_rules_rome",
+    path = "../..",
+)
+
+#---SNIP--- Below here is re-used in the workspace snippet published on releases
+
+####################
+# rules_rome setup #
+####################
+# Fetches the rules_rome dependencies.
+# If you want to have a different version of some dependency,
+# you should fetch it *before* calling this.
+# Alternatively, you can skip calling this function, so long as you've
+# already fetched all the dependencies.
+load("@build_bazel_rules_rome//rome:dependencies.bzl", "rules_rome_dependencies")
+
+rules_rome_dependencies()
+
+load("@build_bazel_rules_rome//rome:repositories.bzl", "rome_register_toolchains")
+
+rome_register_toolchains(name = "rome")

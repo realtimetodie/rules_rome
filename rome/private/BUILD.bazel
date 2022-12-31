@@ -1,0 +1,22 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+exports_files(["rome_launcher.tpl"])
+
+bzl_library(
+    name = "toolchains_repo",
+    srcs = ["toolchains_repo.bzl"],
+    visibility = ["//rome:__subpackages__"],
+)
+
+bzl_library(
+    name = "versions",
+    srcs = ["versions.bzl"],
+    visibility = ["//rome:__subpackages__"],
+)
+
+bzl_library(
+    name = "rome",
+    srcs = ["rome.bzl"],
+    visibility = ["//rome:__subpackages__"],
+    deps = ["@aspect_bazel_lib//lib:expand_make_vars"],
+)

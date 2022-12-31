@@ -1,0 +1,16 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test", "rome_format_test")
+
+rome_check_test(name = "check_test")
+
+build_test(
+    name = "check_build_test",
+    targets = [":check_test"],
+)
+
+rome_format_test(name = "format_test")
+
+build_test(
+    name = "format_build_test",
+    targets = [":format_test"],
+)
