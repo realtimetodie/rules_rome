@@ -53,6 +53,7 @@ $ bazel run @build_bazel_rules_rome//rome:rome_format --@build_bazel_rules_rome/
 
 load("//rome/private:rome.bzl", _rome_bin = "rome")
 load("@bazel_skylib//lib:types.bzl", "types")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
 rome = rule(
     doc = """Underlying rule for the executable macros.
@@ -99,25 +100,43 @@ def rome_check_test(name, data = None, options = [], config = None, **kwargs):
         **kwargs
     )
 
-def rome_format_test(name, data = None, options = [], config = None, **kwargs):
-    """Execute the Rome formatter https://docs.rome.tools/formatter/
+def rome_format_test(name, data = None, args = [], config = None, **kwargs):
+    """Execute the Rome formatter
+
+    https://docs.rome.tools/formatter/
 
     Args:
         name: A name for the target
-        data: Runtime dependencies of the program
-        options: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
-        config: Label of a configuration file for Rome, see https://docs.rome.tools/configuration/
-        **kwargs: Additional named parameters like tags or visibility
+
+        srcs: List of labels of TypeScript or JavaScript source files.
+
+        args: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
+        
+        config: Label of a rome.json configuration file for Rome, see https://docs.rome.tools/configuration/
+            Instead of a label, you can pass a dictionary matching the JSON schema.
+
+        **kwargs: passed through to underlying [`rome_test`](#rome_test), eg. `visibility`, `tags`
     """
     if data == None:
         data = native.glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"])
     elif not types.is_list(data):
         fail("data must be a list, not a " + type(data))
 
+    if type(config) == type(dict()):
+        write_file(
+            name = "_gen_rome_config_%s" % name,
+            out = "rome.json",
+            content = [json.encode(config)]
+        )
+
+        # From here, the configuration becomes a file, the same as if the
+        # user supplied a rome.json InputArtifact
+        config = "rome.json"
+
     rome_test(
         name = name,
         data = data,
-        command = ["ci", "--linter-enabled=false"] + options + ["."],
+        command = ["ci", "--linter-enabled=false"] + args + ["."],
         config = config,
         **kwargs
     )

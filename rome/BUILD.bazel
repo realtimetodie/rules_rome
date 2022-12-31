@@ -24,6 +24,7 @@ bzl_library(
     deps = [
         "//rome/private:rome",
         "@bazel_skylib//lib:types",
+        "@bazel_skylib//rules:write_file",
     ],
 )
 

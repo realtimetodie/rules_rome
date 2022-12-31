@@ -128,10 +128,13 @@ Execute the Rome linter https://docs.rome.tools/linter/
 ## rome_format_test
 
 <pre>
-rome_format_test(<a href="#rome_format_test-name">name</a>, <a href="#rome_format_test-data">data</a>, <a href="#rome_format_test-options">options</a>, <a href="#rome_format_test-config">config</a>, <a href="#rome_format_test-kwargs">kwargs</a>)
+rome_format_test(<a href="#rome_format_test-name">name</a>, <a href="#rome_format_test-data">data</a>, <a href="#rome_format_test-args">args</a>, <a href="#rome_format_test-config">config</a>, <a href="#rome_format_test-kwargs">kwargs</a>)
 </pre>
 
-Execute the Rome formatter https://docs.rome.tools/formatter/
+Execute the Rome formatter
+
+https://docs.rome.tools/formatter/
+
 
 **PARAMETERS**
 
@@ -139,9 +142,9 @@ Execute the Rome formatter https://docs.rome.tools/formatter/
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="rome_format_test-name"></a>name |  A name for the target   |  none |
-| <a id="rome_format_test-data"></a>data |  Runtime dependencies of the program   |  <code>None</code> |
-| <a id="rome_format_test-options"></a>options |  Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options   |  <code>[]</code> |
-| <a id="rome_format_test-config"></a>config |  Label of a configuration file for Rome, see https://docs.rome.tools/configuration/   |  <code>None</code> |
-| <a id="rome_format_test-kwargs"></a>kwargs |  Additional named parameters like tags or visibility   |  none |
+| <a id="rome_format_test-data"></a>data |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="rome_format_test-args"></a>args |  Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options   |  <code>[]</code> |
+| <a id="rome_format_test-config"></a>config |  Label of a rome.json configuration file for Rome, see https://docs.rome.tools/configuration/ Instead of a label, you can pass a dictionary matching the JSON schema.   |  <code>None</code> |
+| <a id="rome_format_test-kwargs"></a>kwargs |  passed through to underlying [<code>rome_test</code>](#rome_test), eg. <code>visibility</code>, <code>tags</code>   |  none |
 
 

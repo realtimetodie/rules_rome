@@ -62,12 +62,12 @@ rome_toolchain = rule(
     implementation = _rome_toolchain_impl,
     attrs = {
         "target_tool": attr.label(
-            doc = "A hermetically downloaded rome executable target for the target platform.",
+            doc = "A hermetically downloaded Rome binary for the target platform.",
             mandatory = False,
             allow_single_file = True,
         ),
         "target_tool_path": attr.string(
-            doc = "Path to an existing rome executable for the target platform.",
+            doc = "Path to an existing Rome binary for the target platform.",
             mandatory = False,
         ),
     },
