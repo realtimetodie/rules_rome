@@ -13,7 +13,7 @@ for version in $versions; do
     assets=$(echo $releases | jq --raw-output --arg v "$version" '.["\($v)"] | keys[]')
     for asset in $assets; do
         url=$(echo $releases | jq --raw-output --arg v "$version" --arg a "$asset" '.["\($v)"] | .["\($a)"]')
-        echo "        \"$asset\": \"sha384-$(curl -sSL $url | shasum -b -a 384 | awk "{ print \$1 }" | xxd -r -p | base64)\","
+        echo "        \"${asset%.exe}\": \"sha384-$(curl -sSL $url | shasum -b -a 384 | awk "{ print \$1 }" | xxd -r -p | base64)\","
     done
     echo "    },"
 done
