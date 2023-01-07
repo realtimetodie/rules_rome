@@ -22,7 +22,7 @@ function check_build_result() {
   if [[ "${ret}" -ne "${1}" ]]; then
     echo "FAIL: Unexpected return code [saw: ${ret}, want: ${1}] building target //rome/private/tests:${2}"
     echo "  Run \"bazel test //rome/private/tests:${2}\" to see the output"
-    exit 1rome/private/tests
+    exit 1
   else
     echo "OK"
   fi
@@ -58,6 +58,14 @@ EOF
 
   check_build_result $TEST_OK test_formatted
   check_build_result $TEST_FAILED test_unformatted
+
+  echo "exports_files([\"fixtures/formatted.js\"])" >> "${new_workspace}/rome/private/tests/BUILD.bazel"
+
+  # TODO: Format all targets and run the tests again
+  # bazel run @build_bazel_rules_rome//tools:format
+
+  # check_build_result $TEST_OK test_formatted
+  # check_build_result $TEST_OK test_unformatted
 
   popd
 

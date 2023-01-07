@@ -1,6 +1,8 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
 
+exports_files(["rome.json"])
+
 gazelle_binary(
     name = "gazelle_bin",
     languages = ["@bazel_skylib//gazelle/bzl"],
@@ -19,10 +21,4 @@ bzl_library(
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
-)
-
-label_flag(
-    name = "rome.json",
-    build_setting_default = "//rome:rome.json",
-    visibility = ["//visibility:public"],
 )

@@ -70,6 +70,8 @@ load("@aspect_bazel_lib//lib:utils.bzl", "file_exists", "to_label")
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
+COMMON_FILE_EXTENSIONS = ["**/*.ts", "**/*.mts", "**/*.cts", "**/*.tsx", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.js"]
+
 rome = rule(
     doc = """Underlying rule for the executable macros.
 
@@ -113,9 +115,23 @@ def rome_check_test(name, data = None, args = [], config = None, **kwargs):
         **kwargs: passed through to underlying [`rome_test`](#rome_test), eg. `visibility`, `tags`
     """
     if data == None:
-        data = native.glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"])
+        data = native.glob(COMMON_FILE_EXTENSIONS)
     elif not types.is_list(data):
         fail("data must be a list, not a " + type(data))
+
+    if config == None:
+        if file_exists(to_label(":rome.json")):
+            config = "rome.json"
+    elif type(config) == type(dict()):
+        write_file(
+            name = "_gen_rome_config_" + name,
+            out = "rome.json",
+            content = [json.encode(config)]
+        )
+
+        # From here, the configuration becomes a file path, the same as if the
+        # user supplied a rome.json InputArtifact
+        config = "rome.json"
 
     rome_test(
         name = name,
@@ -146,7 +162,7 @@ def rome_format_test(name, data = None, args = [], config = None, **kwargs):
         **kwargs: passed through to underlying [`rome_test`](#rome_test), eg. `visibility`, `tags`
     """
     if data == None:
-        data = native.glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"])
+        data = native.glob(COMMON_FILE_EXTENSIONS)
     elif not types.is_list(data):
         fail("data must be a list, not a " + type(data))
 
