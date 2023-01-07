@@ -4,6 +4,7 @@ These are needed for local dev, and users must install them as well.
 See https://docs.bazel.build/versions/main/skylark/deploying.html#dependencies
 """
 
+load("@bazel_skylib//lib:versions.bzl", "versions")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//rome/private:toolchains_repo.bzl", "PLATFORMS", "toolchains_repo")
@@ -18,9 +19,13 @@ _ATTRS = {
     "platform": attr.string(mandatory = True, values = PLATFORMS.keys()),
     "integrity_hashes": attr.string_dict(),
 }
+_ROME_TOO_OLD = "FATAL: Rome version must be at least v11.0.0 to support Bazel"
 
 def _rome_repo_impl(repository_ctx):
-    filename = "rome-%s" % repository_ctx.attr.platform
+    if not versions.is_at_least("11.0.0", repository_ctx.attr.rome_version.lstrip("v")):
+        fail(_ROME_TOO_OLD)
+
+    filename = "rome-" + repository_ctx.attr.platform
 
     # The binaries of the Rome cli releases for windows are suffixed with ".exe"
     if repository_ctx.attr.platform.startswith("win32"):

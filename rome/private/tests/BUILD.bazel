@@ -1,9 +1,12 @@
 load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test", "rome_format_test")
+load(":versions_test.bzl", "versions_test_suite")
 
 exports_files(
     ["rome.json"],
     visibility = ["//rome:__pkg__"],
 )
+
+versions_test_suite(name = "versions_test")
 
 rome_check_test(
     name = "test_block_stmt_error",

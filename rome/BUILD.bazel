@@ -1,20 +1,23 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("//rome:defs.bzl", "rome")
 
-exports_files(["rome.json"])
+# For stardoc to reference the files
+exports_files(
+    ["defs.bzl"],
+    visibility = ["//docs:__pkg__"],
+)
+
+exports_files(
+    ["rome.json"],
+    visibility = ["//visibility:public"],
+)
 
 # This is the target rule authors should put in their "toolchains"
-# attribute in order to get a rome runtime for the correct
-# platform.
+# attribute in order to get a runtime for the correct platform.
 # See https://docs.bazel.build/versions/main/toolchains.html#writing-rules-that-use-toolchains
 toolchain_type(
     name = "toolchain_type",
     visibility = ["//visibility:public"],
-)
-
-exports_files(
-    ["defs.bzl"],
-    visibility = ["//docs:__pkg__"],
 )
 
 bzl_library(
@@ -23,6 +26,7 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "//rome/private:rome",
+        "@aspect_bazel_lib//lib:utils",
         "@bazel_skylib//lib:types",
         "@bazel_skylib//rules:write_file",
     ],
@@ -45,6 +49,7 @@ bzl_library(
     deps = [
         "//rome/private:versions",
         "//rome/private:toolchains_repo",
+        "@bazel_skylib//lib:versions",
         "@bazel_tools//tools/build_defs/repo:http.bzl",
         "@bazel_tools//tools/build_defs/repo:utils.bzl",
     ],
@@ -57,15 +62,17 @@ bzl_library(
 )
 
 rome(
-    name = "rome_check",
-    data = glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"]),
-    command = ["check", "--apply", "."],
+    name = "check",
+    data = glob(["**/*.ts", "**/*.mts", "**/*.cts", "**/*.tsx", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.js"]),
+    cmd = ["check", "--apply", "."],
     config = "//:rome.json",
+    visibility = ["//visibility:public"],
 )
 
 rome(
-    name = "rome_format",
-    data = glob(["**/*.js", "**/*.mjs", "**/*.ts", "**/*.tsx"]),
-    command = ["format", "--write", "."],
+    name = "format",
+    data = glob(["**/*.ts", "**/*.mts", "**/*.cts", "**/*.tsx", "**/*.jsx", "**/*.mjs", "**/*.cjs", "**/*.js"]),
+    cmd = ["format", "--write", "."],
     config = "//:rome.json",
+    visibility = ["//visibility:public"],
 )

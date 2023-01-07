@@ -18,5 +18,4 @@ bzl_library(
     name = "rome",
     srcs = ["rome.bzl"],
     visibility = ["//rome:__subpackages__"],
-    deps = ["@aspect_bazel_lib//lib:expand_make_vars"],
 )
