@@ -31,20 +31,41 @@ jobs:
       # Will look like '["6.0.0rc1", "5.3.2"]'
       bazelversions: ${{ toJSON(steps.*.outputs.bazelversion) }}
 
+  matrix-prep-os:
+    # Prepares the 'os' axis of the test matrix
+    runs-on: ubuntu-latest
+    steps:
+      - id: linux
+        run: echo "os=ubuntu-latest" >> $GITHUB_OUTPUT
+      - id: windows
+        run: echo "os=windows-latest" >> $GITHUB_OUTPUT
+        # Only run on main branch (or PR branches that contain 'windows') to minimize Windows minutes (billed at 2X)
+        # https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions#included-storage-and-minutes
+        if: ${{ github.ref == 'refs/heads/main' || contains(github.head_ref, 'windows') }}
+    outputs:
+      # Will look like ["ubuntu-latest", "windows-latest"]
+      os: ${{ toJSON(steps.*.outputs.os) }}
+
   test:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     needs:
       - matrix-prep-bazelversion
+      - matrix-prep-os
 
     strategy:
       fail-fast: false
       matrix:
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
+        os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
         folder:
           - "."
           - "e2e/workspace"
+        exclude:
+        # Don't test Windows with Bazel 5 to minimize Windows minutes (billed at 2X)
+        - bazelversion: 5.3.2
+          os: windows-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -62,7 +83,10 @@ jobs:
 
       - name: Configure Bazel version
         working-directory: ${{ matrix.folder }}
-        run: echo "USE_BAZEL_VERSION=${{ matrix.bazelversion }}" >> $GITHUB_ENV
+        # Overwrite the .bazelversion instead of using USE_BAZEL_VERSION so that Bazelisk
+        # still bootstraps Aspect CLI from configuration in .bazeliskrc. Aspect CLI will
+        # then use .bazelversion to determine which Bazel version to use
+        run: echo "${{ matrix.bazelversion }}" > .bazelversion
 
       - name: bazel test //...
         env:
