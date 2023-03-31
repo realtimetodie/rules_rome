@@ -19,10 +19,10 @@ _ATTRS = {
     "platform": attr.string(mandatory = True, values = PLATFORMS.keys()),
     "integrity_hashes": attr.string_dict(),
 }
-_ROME_TOO_OLD = "FATAL: Rome version must be at least v11.0.0 to support Bazel"
+_ROME_TOO_OLD = "FATAL: Rome version must be at least v12.0.0 to support Bazel"
 
 def _rome_repo_impl(repository_ctx):
-    if not versions.is_at_least("11.0.0", repository_ctx.attr.rome_version.lstrip("v")):
+    if not versions.is_at_least("12.0.0", repository_ctx.attr.rome_version.lstrip("v")):
         fail(_ROME_TOO_OLD)
 
     filename = "rome-" + repository_ctx.attr.platform
