@@ -2,14 +2,20 @@ load("//rome:defs.bzl", "rome")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["rome.json"], visibility = ["//visibility:public"])
+
 rome(
     name = "check",
-    cmd = ["check", "--apply", "$BUILD_WORKING_DIRECTORY"],
-    config = "//:rome.json",
+    command = "check",
+    options = ["--apply", "$BUILD_WORKING_DIRECTORY"],
+    config = "//tools:rome.json",
+    visibility = ["//visibility:public"],
 )
 
 rome(
     name = "format",
-    cmd = ["format", "--write", "$BUILD_WORKING_DIRECTORY"],
-    config = "//:rome.json",
+    command = "format",
+    options = ["--write", "$BUILD_WORKING_DIRECTORY"],
+    config = "//tools:rome.json",
+    visibility = ["//visibility:public"],
 )

@@ -3,9 +3,11 @@
 Simplest usage:
 
 ```starlark
-load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test")
+load("@build_bazel_rules_rome//rome:defs.bzl", "rome_check_test", "rome_format_test")
 
 rome_check_test(name = "...")
+
+rome_format_test(name = "...")
 ```
 
 ## Tools
@@ -14,15 +16,17 @@ Rome can be run under Bazel to edit the source files in place instead of printin
 
 ### Rome Linter
 
-https://docs.rome.tools/linter/
+[https://docs.rome.tools/linter/](https://docs.rome.tools/linter/)
 
 Rome's linter statically analyzes your code to catch common errors and helps you write more idiomatic code.
 
+You can use Bazel to run the [Rome linter](https://docs.rome.tools/linter/) in your project's root directory.
+
 ```bash
-$ bazel run @build_bazel_rules_rome//rome:check
+$ bazel run @build_bazel_rules_rome//:check
 ```
 
-This is equivalent to running the Rome linter with the --write option.
+This will lint all source files and is equivalent to running the Rome linter with the --write option.
 
 ```bash
 $ rome check --write
@@ -30,15 +34,17 @@ $ rome check --write
 
 ### Rome Formatter
 
-https://docs.rome.tools/formatter/
+[https://docs.rome.tools/formatter/](https://docs.rome.tools/formatter/)
 
 Rome's formatter formats your code and helps you to catch stylistic errors.
 
+You can use Bazel to run the [Rome formatter](https://docs.rome.tools/formatter/) in your project's root directory.
+
 ```bash
-$ bazel run @build_bazel_rules_rome//rome:format
+$ bazel run @build_bazel_rules_rome//:format
 ```
 
-This is equivalent to running the Rome formatter with the --apply option.
+This is will format all your source files and is equivalent to running the Rome formatter with the --apply option.
 
 ```bash
 $ rome format --apply
@@ -61,7 +67,7 @@ build --@build_bazel_rules_rome//:rome.json=//:rome.json
 The configuration file can also be specified individually.
 
 ```bash
-$ bazel run @build_bazel_rules_rome//rome:format --@build_bazel_rules_rome//:rome.json=//rome.json
+$ bazel run @build_bazel_rules_rome//:format --@build_bazel_rules_rome//:rome.json=//rome.json
 ```
 """
 
@@ -95,7 +101,7 @@ Use this if you need more control over how the testing rule is called.
 )
 
 "Rome check testing macro"
-def rome_check_test(name, data = None, args = [], config = None, **kwargs):
+def rome_check_test(name, data = None, options = [], config = None, **kwargs):
     """Execute the Rome linter
 
     https://docs.rome.tools/linter/
@@ -107,7 +113,7 @@ def rome_check_test(name, data = None, args = [], config = None, **kwargs):
 
         srcs: List of labels of TypeScript or JavaScript source files.
 
-        args: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
+        options: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
         
         config: Label of a rome.json configuration file for Rome, see https://docs.rome.tools/configuration/
             Instead of a label, you can pass a dictionary matching the JSON schema.
@@ -135,14 +141,15 @@ def rome_check_test(name, data = None, args = [], config = None, **kwargs):
 
     rome_test(
         name = name,
-        data = data,
-        cmd = ["ci", "--formatter-enabled=false"] + args + ["."],
+        command = "ci",
+        options = ["--formatter-enabled=false"] + options + ["."],
         config = config,
+        data = data,
         **kwargs
     )
 
 "Rome formatter testing macro"
-def rome_format_test(name, data = None, args = [], config = None, **kwargs):
+def rome_format_test(name, data = None, options = [], config = None, **kwargs):
     """Execute the Rome formatter
 
     https://docs.rome.tools/formatter/
@@ -154,7 +161,7 @@ def rome_format_test(name, data = None, args = [], config = None, **kwargs):
 
         srcs: List of labels of TypeScript or JavaScript source files.
 
-        args: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
+        options: Additional options to pass to Rome, see https://docs.rome.tools/cli/#common-options
 
         config: Label of a rome.json configuration file for Rome, see https://docs.rome.tools/configuration/
             Instead of a label, you can pass a dictionary matching the JSON schema.
@@ -182,8 +189,9 @@ def rome_format_test(name, data = None, args = [], config = None, **kwargs):
 
     rome_test(
         name = name,
-        data = data,
-        cmd = ["ci", "--linter-enabled=false"] + args + ["."],
+        command = "ci",
+        options = ["--linter-enabled=false"] + options + ["."],
         config = config,
+        data = data,
         **kwargs
     )

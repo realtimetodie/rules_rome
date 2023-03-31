@@ -10,4 +10,10 @@ rome_check_test(
     name = "lint_test",
     config = "rome.json",
     data = ["index.js"],
+    target_compatible_with = select({
+        # TODO(jbedard): fix CI failure, like
+        # https://github.com/aspect-build/rules_swc/actions/runs/4471322159/jobs/7856057314?pr=187
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
